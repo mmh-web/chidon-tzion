@@ -22,12 +22,12 @@ export function SectionFilter({ sections, selected, onChange }: Props) {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-bold text-gray-800 m-0">בחר נושאים</h2>
+        <h2 className="text-lg font-bold text-gray-800 m-0">Choose Topics</h2>
         <button
           onClick={selectAll}
           className="text-sm text-israel-blue hover:underline bg-transparent border-none cursor-pointer"
         >
-          בחר הכל
+          Select All
         </button>
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -50,7 +50,7 @@ export function SectionFilter({ sections, selected, onChange }: Props) {
                 {section.title}
               </div>
               <div className="text-xs text-gray-400 mt-1">
-                {section.questions.length} שאלות
+                {section.questions.length} questions
               </div>
             </button>
           );

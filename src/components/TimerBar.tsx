@@ -44,7 +44,7 @@ export function TimerBar({ seconds, onTimeout, paused, questionKey }: Props) {
     <div className="mb-4">
       <div className="flex items-center justify-between mb-1">
         <span className={`text-sm font-bold ${isCritical ? 'text-red-500 timer-warning' : isWarning ? 'text-orange-500' : 'text-gray-500'}`}>
-          ⏱️ {Math.ceil(remaining)} שניות
+          ⏱️ {Math.ceil(remaining)} seconds
         </span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">

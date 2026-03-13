@@ -69,16 +69,16 @@ export function ReviewPage() {
       <div className="text-center py-12 space-y-4">
         <div className="text-6xl">🎉</div>
         <h2 className="text-xl font-bold text-gray-700">
-          {missedOnly ? '!אין שאלות שהוחמצו' : 'אין שאלות בנושאים שנבחרו'}
+          {missedOnly ? 'No missed questions!' : 'No questions in selected topics'}
         </h2>
         <p className="text-gray-500">
-          {missedOnly ? 'כל הכבוד! אתה שולט בחומר' : 'בחר נושאים אחרים'}
+          {missedOnly ? 'Great job! You\'ve mastered the material' : 'Choose different topics'}
         </p>
         <button
           onClick={() => navigate('/')}
           className="bg-israel-blue hover:bg-israel-blue-dark text-white px-6 py-3 rounded-xl font-bold transition-colors border-none cursor-pointer"
         >
-          חזור לדף הבית
+          Back to Home
         </button>
       </div>
     );
@@ -90,7 +90,7 @@ export function ReviewPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-gray-800">
-          {missedOnly ? '🔄 חזרה על שאלות שהוחמצו' : '📚 כרטיסיות לימוד'}
+          {missedOnly ? '🔄 Review Missed Questions' : '📚 Study Flashcards'}
         </h2>
         <span className="text-sm text-gray-500">
           {currentIndex + 1} / {questions.length}
@@ -122,20 +122,20 @@ export function ReviewPage() {
       {isFinished && (
         <div className="text-center py-8 space-y-4 animate-pop-in">
           <div className="text-6xl">🌟</div>
-          <h3 className="text-xl font-bold text-gray-700">!סיימת את הכרטיסיות</h3>
-          <p className="text-gray-500">ידעת {knewCount} מתוך {questions.length}</p>
+          <h3 className="text-xl font-bold text-gray-700">You finished all the cards!</h3>
+          <p className="text-gray-500">You knew {knewCount} out of {questions.length}</p>
           <div className="flex gap-3">
             <button
               onClick={resetReview}
               className="flex-1 bg-israel-blue hover:bg-israel-blue-dark text-white py-3 rounded-xl font-bold transition-colors border-none cursor-pointer"
             >
-              🔄 שוב
+              🔄 Again
             </button>
             <button
               onClick={() => navigate('/')}
               className="flex-1 bg-white hover:bg-gray-50 text-gray-600 py-3 rounded-xl font-bold transition-colors border-2 border-gray-200 cursor-pointer"
             >
-              🏠 דף הבית
+              🏠 Home
             </button>
           </div>
         </div>
@@ -149,14 +149,14 @@ export function ReviewPage() {
             disabled={currentIndex === 0}
             className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-xl font-medium transition-colors border-none cursor-pointer disabled:opacity-30"
           >
-            → הקודם
+            ← Previous
           </button>
           <button
             onClick={() => currentIndex < questions.length - 1 && setCurrentIndex(prev => prev + 1)}
             disabled={currentIndex >= questions.length - 1}
             className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-xl font-medium transition-colors border-none cursor-pointer disabled:opacity-30"
           >
-            הבא ←
+            Next →
           </button>
         </div>
       )}

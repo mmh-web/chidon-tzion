@@ -21,8 +21,8 @@ export function ProgressBar({ sections, selectedSections }: Props) {
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-bold text-gray-700">התקדמות</span>
-        <span className="text-sm text-gray-500">{mastered}/{totalQuestions} נשלטו</span>
+        <span className="text-sm font-bold text-gray-700">Progress</span>
+        <span className="text-sm text-gray-500">{mastered}/{totalQuestions} mastered</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
         <div
@@ -31,9 +31,9 @@ export function ProgressBar({ sections, selectedSections }: Props) {
         />
       </div>
       <div className="flex justify-between mt-2 text-xs text-gray-400">
-        <span>📚 נצפו: {seen}</span>
-        <span>🏆 שיא רצף: {progress.bestStreak}</span>
-        <span>📝 חידונים: {progress.totalQuizzesTaken}</span>
+        <span>📚 Seen: {seen}</span>
+        <span>🏆 Best Streak: {progress.bestStreak}</span>
+        <span>📝 Quizzes: {progress.totalQuizzesTaken}</span>
       </div>
     </div>
   );

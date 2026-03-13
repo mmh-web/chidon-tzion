@@ -65,7 +65,7 @@ export function QuizPage() {
     return (
       <div className="text-center py-12">
         <div className="text-4xl mb-4 animate-pulse">🇮🇱</div>
-        <p className="text-gray-500">טוען שאלות...</p>
+        <p className="text-gray-500">Loading questions...</p>
       </div>
     );
   }
@@ -108,11 +108,11 @@ export function QuizPage() {
           }`}>
             <span className="text-3xl">{quiz.lastAnswerCorrect ? '🎉' : '😢'}</span>
             <p className={`font-bold text-lg mt-1 ${quiz.lastAnswerCorrect ? 'text-green-700' : 'text-red-700'}`}>
-              {quiz.lastAnswerCorrect ? '!נכון' : 'לא נכון'}
+              {quiz.lastAnswerCorrect ? 'Correct!' : 'Incorrect'}
             </p>
             {!quiz.lastAnswerCorrect && (
               <p className="text-sm text-red-600 mt-1">
-                התשובה הנכונה: {quiz.currentQuestion.answer}
+                Correct answer: {quiz.currentQuestion.answer}
               </p>
             )}
           </div>
@@ -120,7 +120,7 @@ export function QuizPage() {
             onClick={handleNext}
             className="w-full bg-israel-blue hover:bg-israel-blue-dark text-white py-3 rounded-xl font-bold text-lg transition-colors border-none cursor-pointer"
           >
-            {quiz.currentIndex + 1 < quiz.totalQuestions ? 'שאלה הבאה ←' : 'סיום'}
+            {quiz.currentIndex + 1 < quiz.totalQuestions ? 'Next Question →' : 'Finish'}
           </button>
         </div>
       )}

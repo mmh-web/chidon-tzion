@@ -130,7 +130,7 @@ export function useQuiz(sections: Section[], selectedSectionIds: string[], timer
       const quizAnswer: QuizAnswer = {
         questionId: current.question.id,
         correct: false,
-        userAnswer: '(נגמר הזמן)',
+        userAnswer: "(Time's up)",
         correctAnswer: current.question.answer,
       };
 

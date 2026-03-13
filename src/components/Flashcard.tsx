@@ -19,7 +19,7 @@ export function Flashcard({ question, onResult }: Props) {
         <div className={`flip-card-inner relative w-full ${flipped ? 'flipped' : ''}`} style={{ minHeight: '200px' }}>
           {/* Front */}
           <div className="flip-card-front absolute inset-0 bg-white rounded-2xl p-6 shadow-lg border-2 border-israel-blue flex flex-col items-center justify-center">
-            <p className="text-xs text-gray-400 mb-3">לחץ לגלות את התשובה</p>
+            <p className="text-xs text-gray-400 mb-3">Tap to reveal the answer</p>
             <p className="text-xl font-bold text-gray-800 text-center leading-relaxed">
               {question.question}
             </p>
@@ -27,7 +27,7 @@ export function Flashcard({ question, onResult }: Props) {
 
           {/* Back */}
           <div className="flip-card-back absolute inset-0 bg-gradient-to-br from-israel-blue to-israel-blue-dark rounded-2xl p-6 shadow-lg flex flex-col items-center justify-center">
-            <p className="text-xs text-blue-200 mb-3">תשובה</p>
+            <p className="text-xs text-blue-200 mb-3">Answer</p>
             <p className="text-xl font-bold text-white text-center leading-relaxed">
               {question.answer}
             </p>
@@ -44,7 +44,7 @@ export function Flashcard({ question, onResult }: Props) {
             }}
             className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold text-lg transition-colors border-none cursor-pointer"
           >
-            ✅ ידעתי!
+            ✅ I knew it!
           </button>
           <button
             onClick={() => {
@@ -53,7 +53,7 @@ export function Flashcard({ question, onResult }: Props) {
             }}
             className="flex-1 bg-red-400 hover:bg-red-500 text-white py-3 rounded-xl font-bold text-lg transition-colors border-none cursor-pointer"
           >
-            ❌ לא ידעתי
+            ❌ Didn't know
           </button>
         </div>
       )}
