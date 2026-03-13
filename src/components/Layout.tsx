@@ -1,7 +1,7 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useProgress } from '../context/ProgressContext';
-import { startMusic, stopMusic } from '../utils/music';
+import { startMusic, stopMusic, musicTracks } from '../utils/music';
 
 export function Layout({ children }: { children: ReactNode }) {
   const location = useLocation();
@@ -81,6 +81,23 @@ export function Layout({ children }: { children: ReactNode }) {
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6">
         {children}
       </main>
+
+      {/* Lyrics bar for tracks with lyrics */}
+      {musicUnlocked && !muted && activeTrack && (() => {
+        const track = musicTracks.find(t => t.id === activeTrack);
+        if (!track?.lyrics) return null;
+        return (
+          <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 text-white py-2 overflow-hidden lyrics-bar z-50">
+            <div className="lyrics-scroll whitespace-nowrap text-lg font-bold" dir="rtl">
+              <span className="mx-8">🕊️</span>
+              <span>{track.lyrics}</span>
+              <span className="mx-8">🕊️</span>
+              <span>{track.lyrics}</span>
+              <span className="mx-8">🕊️</span>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

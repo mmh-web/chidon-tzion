@@ -113,3 +113,21 @@ body {
 .joke-fade {
   animation: jokeFade 4s ease-in-out forwards;
 }
+
+@keyframes lyricsScroll {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes lyricGlow {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.lyrics-scroll {
+  animation: lyricsScroll 12s linear infinite;
+}
+
+.lyrics-bar {
+  animation: lyricGlow 3s ease-in-out infinite;
+}

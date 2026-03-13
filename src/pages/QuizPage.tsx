@@ -54,7 +54,7 @@ export function QuizPage() {
     if (quiz.lastAnswerCorrect && quiz.showingFeedback && quiz.currentIndex !== lastAwardedIndex) {
       setConfettiTrigger(prev => prev + 1);
       addCoins(1);
-      addEnergy(100);
+      addEnergy(25);
       setLastAwardedIndex(quiz.currentIndex);
       setShowCoinAnim(true);
       setTimeout(() => setShowCoinAnim(false), 1500);

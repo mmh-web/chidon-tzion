@@ -72,14 +72,18 @@ export interface MusicTrack {
   waveType: OscillatorType;
   tempo: number;
   melody: Note[];
+  lyrics?: string;
 }
+
+// Ani Maamin — traditional Jewish declaration of faith
+export const aniMaaminLyrics = 'אֲנִי מַאֲמִין בֶּאֱמוּנָה שְׁלֵמָה בְּבִיאַת הַמָּשִׁיחַ, וְאַף עַל פִּי שֶׁיִּתְמַהְמֵהַּ, עִם כָּל זֶה אֲחַכֶּה לּוֹ בְּכָל יוֹם שֶׁיָּבוֹא';
 
 export const musicTracks: MusicTrack[] = [
   { id: 'cheerful', name: 'Cheerful Tune', emoji: '🎵', description: 'A happy melody to keep you motivated!', price: 25, waveType: 'square', tempo: 1, melody: cheerfulMelody },
   { id: 'chill', name: 'Chill Vibes', emoji: '🎧', description: 'Relaxed lo-fi beats for focused studying', price: 35, waveType: 'sine', tempo: 1.4, melody: chillMelody },
   { id: 'epic', name: 'Epic Quest', emoji: '⚔️', description: 'Adventure music for brave learners!', price: 50, waveType: 'sawtooth', tempo: 1.1, melody: epicMelody },
   { id: 'dance', name: 'Dance Party', emoji: '🕺', description: 'Get your groove on while you study!', price: 40, waveType: 'square', tempo: 0.85, melody: danceMelody },
-  { id: 'ani-maamin', name: 'Ani Maamin', emoji: '🕊️', description: 'Beautiful traditional Jewish melody', price: 30, waveType: 'sine', tempo: 1.5, melody: aniMaaminMelody },
+  { id: 'ani-maamin', name: 'Ani Maamin', emoji: '🕊️', description: 'Beautiful traditional Jewish melody', price: 30, waveType: 'sine', tempo: 1.5, melody: aniMaaminMelody, lyrics: aniMaaminLyrics },
 ];
 
 function playNote(ctx: AudioContext, freq: number, startTime: number, duration: number, volume: number, waveType: OscillatorType) {

@@ -128,7 +128,7 @@ export function CatShopPage() {
       {/* Games Section */}
       <div>
         <h3 className="font-bold text-gray-700 mb-3 text-lg">🎮 Games</h3>
-        <p className="text-xs text-gray-500 mb-3">Earn ⚡ energy by answering questions! 100 per correct quiz answer, 50 per flashcard.</p>
+        <p className="text-xs text-gray-500 mb-3">Earn ⚡ energy by answering questions correctly! ⚡25 per question.</p>
         <div className="grid grid-cols-3 gap-3">
           {[
             { id: 'sky-climber', name: 'Sky Climber', emoji: '🚀', cost: 200, path: '/game/sky-climber' },
