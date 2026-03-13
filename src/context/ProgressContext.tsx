@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, useCallback, ReactNode } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { ProgressState, QuestionProgress } from '../types';
 
@@ -6,6 +6,8 @@ const defaultProgress: ProgressState = {
   questionProgress: {},
   totalQuizzesTaken: 0,
   bestStreak: 0,
+  coins: 0,
+  ownedCats: [],
 };
 
 interface ProgressContextType {
@@ -15,6 +17,8 @@ interface ProgressContextType {
   updateBestStreak: (streak: number) => void;
   getQuestionProgress: (questionId: string) => QuestionProgress;
   resetProgress: () => void;
+  addCoins: (amount: number) => void;
+  buyCat: (catId: string, price: number) => boolean;
 }
 
 const ProgressContext = createContext<ProgressContextType | null>(null);
@@ -81,12 +85,30 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  const addCoins = useCallback((amount: number) => {
+    setProgress(prev => ({ ...prev, coins: (prev.coins || 0) + amount }));
+  }, [setProgress]);
+
+  const buyCat = (catId: string, price: number): boolean => {
+    let success = false;
+    setProgress(prev => {
+      const coins = prev.coins || 0;
+      const owned = prev.ownedCats || [];
+      if (coins >= price && !owned.includes(catId)) {
+        success = true;
+        return { ...prev, coins: coins - price, ownedCats: [...owned, catId] };
+      }
+      return prev;
+    });
+    return success;
+  };
+
   const resetProgress = () => {
     setProgress(defaultProgress);
   };
 
   return (
-    <ProgressContext.Provider value={{ progress, recordAnswer, incrementQuizCount, updateBestStreak, getQuestionProgress, resetProgress }}>
+    <ProgressContext.Provider value={{ progress, recordAnswer, incrementQuizCount, updateBestStreak, getQuestionProgress, resetProgress, addCoins, buyCat }}>
       {children}
     </ProgressContext.Provider>
   );

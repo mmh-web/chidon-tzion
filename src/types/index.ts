@@ -28,6 +28,16 @@ export interface ProgressState {
   questionProgress: Record<string, QuestionProgress>;
   totalQuizzesTaken: number;
   bestStreak: number;
+  coins: number;
+  ownedCats: string[];
+}
+
+export interface Cat {
+  id: string;
+  name: string;
+  emoji: string;
+  price: number;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
 }
 
 export interface QuizAnswer {

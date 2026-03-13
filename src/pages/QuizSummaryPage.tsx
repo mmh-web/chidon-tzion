@@ -30,7 +30,7 @@ export function QuizSummaryPage() {
       <Confetti trigger={true} intensity={percentage >= 70 ? 'big' : 'small'} />
 
       {/* Score Card */}
-      <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 text-center">
+      <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 text-center" dir="ltr">
         <div className="text-6xl mb-3">{grade.emoji}</div>
         <h2 className={`text-2xl font-bold mb-2 ${grade.color}`}>{grade.text}</h2>
         <div className="text-5xl font-bold text-israel-blue mb-2">{percentage}%</div>
@@ -50,11 +50,10 @@ export function QuizSummaryPage() {
           <div className="space-y-3">
             {missedQuestions.map((q, i) => (
               <div key={i} className="bg-red-50 rounded-lg p-3 border border-red-100">
-                <p className="text-sm text-gray-600 mb-1 font-medium">Question: {q.questionId}</p>
-                <p className="text-sm text-red-600">
+                <p dir="ltr" className="text-sm text-red-600">
                   Your answer: <span className="line-through">{q.userAnswer}</span>
                 </p>
-                <p className="text-sm text-green-600 font-bold">
+                <p dir="ltr" className="text-sm text-green-600 font-bold">
                   Correct answer: {q.correctAnswer}
                 </p>
               </div>

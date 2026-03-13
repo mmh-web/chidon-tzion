@@ -12,13 +12,13 @@ interface Props {
 export function QuestionCard({ question, choices, onAnswer, disabled, selectedAnswer, correctAnswer }: Props) {
   return (
     <div className="animate-slide-in">
-      <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 mb-4">
+      <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 mb-4" dir="rtl">
         <p className="text-xl font-bold text-gray-800 leading-relaxed m-0">
           {question.question}
         </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3" dir="rtl">
         {choices.map((choice, i) => {
           let bgClass = 'bg-white hover:bg-blue-50 border-gray-200 hover:border-israel-blue';
           let textClass = 'text-gray-700';

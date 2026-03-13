@@ -66,7 +66,7 @@ export function ReviewPage() {
 
   if (questions.length === 0) {
     return (
-      <div className="text-center py-12 space-y-4">
+      <div className="text-center py-12 space-y-4" dir="ltr">
         <div className="text-6xl">🎉</div>
         <h2 className="text-xl font-bold text-gray-700">
           {missedOnly ? 'No missed questions!' : 'No questions in selected topics'}
@@ -87,7 +87,7 @@ export function ReviewPage() {
   const isFinished = currentIndex >= questions.length - 1 && (knewCount + didntKnowCount) >= questions.length;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir="ltr">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-gray-800">
           {missedOnly ? '🔄 Review Missed Questions' : '📚 Study Flashcards'}

@@ -7,7 +7,7 @@ interface Props {
 
 export function ScoreDisplay({ score, streak, currentQuestion, totalQuestions }: Props) {
   return (
-    <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center justify-between mb-4" dir="ltr">
       <div className="flex items-center gap-4">
         <div className="bg-white rounded-lg px-3 py-2 shadow-sm border border-gray-100">
           <span className="text-xs text-gray-500 block">Score</span>

@@ -27,7 +27,7 @@ export function HomePage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" dir="ltr">
       {/* Welcome */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-1">Welcome!</h2>

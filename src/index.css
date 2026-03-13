@@ -76,6 +76,15 @@ body {
   transition: width 0.1s linear;
 }
 
+@keyframes coinFloat {
+  0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-80px) scale(1.5); }
+}
+
+.coin-float-up {
+  animation: coinFloat 1.5s ease-out forwards;
+}
+
 .timer-warning {
   animation: pulse 0.5s ease-in-out infinite;
 }

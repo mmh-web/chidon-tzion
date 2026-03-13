@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuiz } from '../hooks/useQuiz';
+import { useProgress } from '../context/ProgressContext';
 import { QuestionCard } from '../components/QuestionCard';
 import { ScoreDisplay } from '../components/ScoreDisplay';
 import { TimerBar } from '../components/TimerBar';
@@ -20,9 +21,11 @@ export function QuizPage() {
   };
 
   const quiz = useQuiz(sections, selectedSections, timerSettings);
+  const { addCoins } = useProgress();
   const [started, setStarted] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [confettiTrigger, setConfettiTrigger] = useState(0);
+  const [showCoinAnim, setShowCoinAnim] = useState(false);
 
   useEffect(() => {
     if (!started) {
@@ -45,11 +48,17 @@ export function QuizPage() {
     }
   }, [quiz.finished, navigate, quiz.score, quiz.totalQuestions, quiz.missedQuestions, quiz.maxStreak, selectedSections]);
 
+  const [lastAwardedIndex, setLastAwardedIndex] = useState(-1);
+
   useEffect(() => {
-    if (quiz.lastAnswerCorrect && quiz.streak >= 3) {
+    if (quiz.lastAnswerCorrect && quiz.showingFeedback && quiz.currentIndex !== lastAwardedIndex) {
       setConfettiTrigger(prev => prev + 1);
+      addCoins(1);
+      setLastAwardedIndex(quiz.currentIndex);
+      setShowCoinAnim(true);
+      setTimeout(() => setShowCoinAnim(false), 1500);
     }
-  }, [quiz.streak, quiz.lastAnswerCorrect]);
+  }, [quiz.showingFeedback, quiz.lastAnswerCorrect, quiz.currentIndex, lastAwardedIndex, addCoins]);
 
   const handleAnswer = (answer: string) => {
     setSelectedAnswer(answer);
@@ -72,7 +81,16 @@ export function QuizPage() {
 
   return (
     <div>
-      <Confetti trigger={confettiTrigger > 0} key={confettiTrigger} intensity="small" />
+      <Confetti trigger={confettiTrigger > 0} key={confettiTrigger} intensity={quiz.streak >= 3 ? 'big' : 'small'} />
+
+      {/* Coin earned animation */}
+      {showCoinAnim && (
+        <div className="coin-float-up fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+          <div className="text-3xl font-bold text-yellow-500 flex items-center gap-1">
+            <span className="text-4xl">₪</span> +1
+          </div>
+        </div>
+      )}
 
       <ScoreDisplay
         score={quiz.score}
@@ -103,12 +121,14 @@ export function QuizPage() {
         <div className="mt-4 animate-pop-in">
           <div className={`text-center p-4 rounded-xl mb-3 ${
             quiz.lastAnswerCorrect
-              ? 'bg-green-100 border-2 border-green-300'
-              : 'bg-red-100 border-2 border-red-300'
+              ? 'bg-green-100 border-2 border-green-300 animate-pop-in'
+              : 'bg-red-100 border-2 border-red-300 animate-shake'
           }`}>
-            <span className="text-3xl">{quiz.lastAnswerCorrect ? '🎉' : '😢'}</span>
-            <p className={`font-bold text-lg mt-1 ${quiz.lastAnswerCorrect ? 'text-green-700' : 'text-red-700'}`}>
-              {quiz.lastAnswerCorrect ? 'Correct!' : 'Incorrect'}
+            <span className="text-4xl">{quiz.lastAnswerCorrect ? (quiz.streak >= 3 ? '🔥🎉🔥' : '🎉') : '😢'}</span>
+            <p dir="ltr" className={`font-bold text-lg mt-1 ${quiz.lastAnswerCorrect ? 'text-green-700' : 'text-red-700'}`}>
+              {quiz.lastAnswerCorrect
+                ? (quiz.streak >= 5 ? 'UNSTOPPABLE!' : quiz.streak >= 3 ? 'Amazing streak!' : 'Correct! +₪1')
+                : 'Incorrect'}
             </p>
             {!quiz.lastAnswerCorrect && (
               <p className="text-sm text-red-600 mt-1">
