@@ -1,12 +1,26 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Flashcard } from '../components/Flashcard';
 import { SectionFilter } from '../components/SectionFilter';
 import { useProgress } from '../context/ProgressContext';
 import questionsData from '../data/questions.json';
 import { Section, Question } from '../types';
+import { shuffle } from '../utils/shuffle';
 
 const sections = questionsData.sections as Section[];
+
+const israeliJokes = [
+  "Why did the falafel cross the road? To get to the other pita!",
+  "What's a cat's favorite city? Purr-usalem!",
+  "Why is the Dead Sea always calm? Because it has no life!",
+  "What do you call a funny pomegranate? A rimon-comedian!",
+  "How does hummus say goodbye? Tahini later!",
+  "What's a camel's favorite day? Hump day in the Negev!",
+  "Why did the sabra go to school? To get a little less prickly!",
+  "What did the olive say to the pita? You're on a roll!",
+  "Why don't secrets last in Tel Aviv? Too many balconies!",
+  "What's a kibbutznik's favorite music? Country!",
+];
 
 export function ReviewPage() {
   const location = useLocation();
@@ -17,10 +31,14 @@ export function ReviewPage() {
   };
 
   const [selectedSections, setSelectedSections] = useState<string[]>(initialSections);
-  const { progress, recordAnswer } = useProgress();
+  const { progress, recordAnswer, addCoins } = useProgress();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [knewCount, setKnewCount] = useState(0);
   const [didntKnowCount, setDidntKnowCount] = useState(0);
+  const [shuffleKey, setShuffleKey] = useState(0);
+  const [ufoVisible, setUfoVisible] = useState(false);
+  const [currentJoke, setCurrentJoke] = useState('');
+  const [showCoinReward, setShowCoinReward] = useState(false);
 
   const questions = useMemo(() => {
     const allQuestions: Question[] = sections
@@ -38,15 +56,35 @@ export function ReviewPage() {
       });
     }
 
-    return allQuestions;
-  }, [selectedSections, missedOnly, progress]);
+    // Apply shuffle when shuffleKey changes
+    return shuffleKey > 0 ? shuffle(allQuestions) : allQuestions;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSections, missedOnly, progress, shuffleKey]);
+
+  const triggerUfo = useCallback(() => {
+    const joke = israeliJokes[Math.floor(Math.random() * israeliJokes.length)];
+    setCurrentJoke(joke);
+    setUfoVisible(true);
+    setShowCoinReward(true);
+    setTimeout(() => {
+      setUfoVisible(false);
+      setShowCoinReward(false);
+    }, 4000);
+  }, []);
 
   const handleResult = (knew: boolean) => {
     const question = questions[currentIndex];
     recordAnswer(question.id, knew);
 
     if (knew) {
-      setKnewCount(prev => prev + 1);
+      const newKnewCount = knewCount + 1;
+      setKnewCount(newKnewCount);
+
+      // Every 3 correct: earn ₪1 + UFO joke
+      if (newKnewCount > 0 && newKnewCount % 3 === 0) {
+        addCoins(1);
+        triggerUfo();
+      }
     } else {
       setDidntKnowCount(prev => prev + 1);
     }
@@ -59,6 +97,13 @@ export function ReviewPage() {
   };
 
   const resetReview = () => {
+    setCurrentIndex(0);
+    setKnewCount(0);
+    setDidntKnowCount(0);
+  };
+
+  const handleShuffle = () => {
+    setShuffleKey(prev => prev + 1);
     setCurrentIndex(0);
     setKnewCount(0);
     setDidntKnowCount(0);
@@ -87,7 +132,22 @@ export function ReviewPage() {
   const isFinished = currentIndex >= questions.length - 1 && (knewCount + didntKnowCount) >= questions.length;
 
   return (
-    <div className="space-y-4" dir="ltr">
+    <div className="space-y-4 relative" dir="ltr">
+      {/* UFO Animation */}
+      {ufoVisible && (
+        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+          <div className="ufo-fly absolute top-1/4" style={{ fontSize: '4rem' }}>
+            🛸
+          </div>
+          <div className="joke-fade absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/95 backdrop-blur px-6 py-4 rounded-2xl shadow-2xl border-2 border-yellow-400 max-w-[80vw] text-center">
+            <p className="text-lg font-bold text-gray-800 m-0">{currentJoke}</p>
+            {showCoinReward && (
+              <p className="text-yellow-600 font-bold mt-2 m-0 text-xl">+₪1</p>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-gray-800">
           {missedOnly ? '🔄 Review Missed Questions' : '📚 Study Flashcards'}
@@ -97,10 +157,17 @@ export function ReviewPage() {
         </span>
       </div>
 
-      {/* Progress */}
-      <div className="flex gap-2 text-sm">
+      {/* Progress + Shuffle */}
+      <div className="flex items-center gap-2 text-sm">
         <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full">✅ {knewCount}</span>
         <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full">❌ {didntKnowCount}</span>
+        <button
+          onClick={handleShuffle}
+          className="ml-auto bg-purple-100 hover:bg-purple-200 text-purple-700 px-3 py-1 rounded-full font-medium transition-colors border-none cursor-pointer text-sm"
+          title="Shuffle cards"
+        >
+          🔀 Shuffle
+        </button>
       </div>
 
       {!missedOnly && (

@@ -7,6 +7,7 @@ export function generateChoices(
   currentSectionId: string
 ): string[] {
   const correctAnswer = question.answer;
+  const correctLen = correctAnswer.length;
 
   // Gather all answers from the same section first
   const currentSection = allSections.find(s => s.id === currentSectionId);
@@ -26,20 +27,40 @@ export function generateChoices(
   const uniqueSame = [...new Set(sameSectionAnswers)];
   const uniqueOther = [...new Set(otherAnswers)];
 
-  // Pick distractors: prefer same section
-  const distractors: string[] = [];
-  const shuffledSame = shuffle(uniqueSame);
-  const shuffledOther = shuffle(uniqueOther);
+  // Sort by similarity in length to the correct answer (closer = harder to distinguish)
+  const byLengthSimilarity = (a: string, b: string) =>
+    Math.abs(a.length - correctLen) - Math.abs(b.length - correctLen);
 
-  for (const a of shuffledSame) {
+  const sortedSame = [...uniqueSame].sort(byLengthSimilarity);
+  const sortedOther = [...uniqueOther].sort(byLengthSimilarity);
+
+  // Pick distractors: prefer same section, sorted by length similarity
+  // Add some randomness: pick from top candidates, not always the closest
+  const pickFromTop = (arr: string[], count: number): string[] => {
+    // Take top ~60% of candidates (at least 5), then shuffle and pick
+    const poolSize = Math.max(5, Math.ceil(arr.length * 0.6));
+    const topPool = arr.slice(0, poolSize);
+    const shuffled = shuffle(topPool);
+    return shuffled.slice(0, count);
+  };
+
+  const distractors: string[] = [];
+
+  // Try to get distractors from same section first
+  const samePicks = pickFromTop(sortedSame, 3);
+  for (const a of samePicks) {
     if (distractors.length >= 3) break;
     distractors.push(a);
   }
 
-  for (const a of shuffledOther) {
-    if (distractors.length >= 3) break;
-    if (!distractors.includes(a)) {
-      distractors.push(a);
+  // Fill remaining from other sections
+  if (distractors.length < 3) {
+    const otherPicks = pickFromTop(sortedOther, 3 - distractors.length);
+    for (const a of otherPicks) {
+      if (distractors.length >= 3) break;
+      if (!distractors.includes(a)) {
+        distractors.push(a);
+      }
     }
   }
 
