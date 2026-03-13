@@ -6,6 +6,9 @@ import { QuizPage } from './pages/QuizPage';
 import { QuizSummaryPage } from './pages/QuizSummaryPage';
 import { ReviewPage } from './pages/ReviewPage';
 import { CatShopPage } from './pages/CatShopPage';
+import { SkyClimberPage } from './pages/SkyClimberPage';
+import { CatRunnerPage } from './pages/CatRunnerPage';
+import { MemoryMatchPage } from './pages/MemoryMatchPage';
 
 function App() {
   return (
@@ -18,6 +21,9 @@ function App() {
             <Route path="/quiz/summary" element={<QuizSummaryPage />} />
             <Route path="/review" element={<ReviewPage />} />
             <Route path="/cats" element={<CatShopPage />} />
+            <Route path="/game/sky-climber" element={<SkyClimberPage />} />
+            <Route path="/game/cat-runner" element={<CatRunnerPage />} />
+            <Route path="/game/memory-match" element={<MemoryMatchPage />} />
           </Routes>
         </Layout>
       </HashRouter>

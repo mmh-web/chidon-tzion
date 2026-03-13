@@ -51,6 +51,18 @@ const danceMelody: Note[] = [
   [329.63, 0.5], [293.66, 0.5], [329.63, 2],
 ];
 
+// Track 5: Ani Maamin (I Believe) - traditional Jewish melody
+const aniMaaminMelody: Note[] = [
+  [293.66, 1.5], [329.63, 0.5], [349.23, 1], [392.00, 1],
+  [349.23, 1], [329.63, 0.5], [293.66, 0.5], [329.63, 2],
+  [293.66, 1.5], [329.63, 0.5], [349.23, 1], [392.00, 0.5],
+  [440.00, 0.5], [392.00, 1], [349.23, 1], [329.63, 2],
+  [440.00, 1.5], [392.00, 0.5], [440.00, 1], [493.88, 1],
+  [440.00, 1], [392.00, 0.5], [349.23, 0.5], [392.00, 2],
+  [349.23, 1], [329.63, 0.5], [293.66, 0.5], [329.63, 1],
+  [349.23, 1], [329.63, 1], [293.66, 1], [261.63, 2],
+];
+
 export interface MusicTrack {
   id: string;
   name: string;
@@ -67,6 +79,7 @@ export const musicTracks: MusicTrack[] = [
   { id: 'chill', name: 'Chill Vibes', emoji: '🎧', description: 'Relaxed lo-fi beats for focused studying', price: 35, waveType: 'sine', tempo: 1.4, melody: chillMelody },
   { id: 'epic', name: 'Epic Quest', emoji: '⚔️', description: 'Adventure music for brave learners!', price: 50, waveType: 'sawtooth', tempo: 1.1, melody: epicMelody },
   { id: 'dance', name: 'Dance Party', emoji: '🕺', description: 'Get your groove on while you study!', price: 40, waveType: 'square', tempo: 0.85, melody: danceMelody },
+  { id: 'ani-maamin', name: 'Ani Maamin', emoji: '🕊️', description: 'Beautiful traditional Jewish melody', price: 30, waveType: 'sine', tempo: 1.5, melody: aniMaaminMelody },
 ];
 
 function playNote(ctx: AudioContext, freq: number, startTime: number, duration: number, volume: number, waveType: OscillatorType) {

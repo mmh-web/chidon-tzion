@@ -11,6 +11,7 @@ const defaultProgress: ProgressState = {
   musicUnlocked: false,
   ownedTracks: [],
   activeTrack: '',
+  energy: 0,
 };
 
 interface ProgressContextType {
@@ -24,6 +25,8 @@ interface ProgressContextType {
   buyCat: (catId: string, price: number) => boolean;
   buyTrack: (trackId: string, price: number) => boolean;
   setActiveTrack: (trackId: string) => void;
+  addEnergy: (amount: number) => void;
+  spendEnergy: (amount: number) => boolean;
 }
 
 const ProgressContext = createContext<ProgressContextType | null>(null);
@@ -140,12 +143,29 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     setProgress(prev => ({ ...prev, activeTrack: trackId }));
   };
 
+  const addEnergy = useCallback((amount: number) => {
+    setProgress(prev => ({ ...prev, energy: (prev.energy || 0) + amount }));
+  }, [setProgress]);
+
+  const spendEnergy = (amount: number): boolean => {
+    let success = false;
+    setProgress(prev => {
+      const energy = prev.energy || 0;
+      if (energy >= amount) {
+        success = true;
+        return { ...prev, energy: energy - amount };
+      }
+      return prev;
+    });
+    return success;
+  };
+
   const resetProgress = () => {
     setProgress(defaultProgress);
   };
 
   return (
-    <ProgressContext.Provider value={{ progress, recordAnswer, incrementQuizCount, updateBestStreak, getQuestionProgress, resetProgress, addCoins, buyCat, buyTrack, setActiveTrack }}>
+    <ProgressContext.Provider value={{ progress, recordAnswer, incrementQuizCount, updateBestStreak, getQuestionProgress, resetProgress, addCoins, buyCat, buyTrack, setActiveTrack, addEnergy, spendEnergy }}>
       {children}
     </ProgressContext.Provider>
   );

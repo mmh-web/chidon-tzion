@@ -31,7 +31,7 @@ export function ReviewPage() {
   };
 
   const [selectedSections, setSelectedSections] = useState<string[]>(initialSections);
-  const { progress, recordAnswer, addCoins } = useProgress();
+  const { progress, recordAnswer, addCoins, addEnergy } = useProgress();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [knewCount, setKnewCount] = useState(0);
   const [didntKnowCount, setDidntKnowCount] = useState(0);
@@ -79,6 +79,9 @@ export function ReviewPage() {
     if (knew) {
       const newKnewCount = knewCount + 1;
       setKnewCount(newKnewCount);
+
+      // Every correct: earn energy
+      addEnergy(50);
 
       // Every 3 correct: earn ₪1 + UFO joke
       if (newKnewCount > 0 && newKnewCount % 3 === 0) {

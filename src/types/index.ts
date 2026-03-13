@@ -33,6 +33,7 @@ export interface ProgressState {
   musicUnlocked: boolean;
   ownedTracks: string[];
   activeTrack: string;
+  energy: number;
 }
 
 export interface Cat {

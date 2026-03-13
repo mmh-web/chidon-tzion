@@ -9,6 +9,7 @@ export function CatShopPage() {
   const navigate = useNavigate();
   const { progress, buyCat, buyTrack, setActiveTrack } = useProgress();
   const coins = progress.coins || 0;
+  const energy = progress.energy || 0;
   const owned = progress.ownedCats || [];
   const ownedTracks = progress.ownedTracks || [];
   const activeTrack = progress.activeTrack || '';
@@ -53,9 +54,15 @@ export function CatShopPage() {
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-1">Shop</h2>
         <p className="text-gray-500">Earn shekels by answering questions correctly!</p>
-        <div className="inline-flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-full mt-2">
-          <span className="text-2xl font-bold">₪</span>
-          <span className="text-xl font-bold text-yellow-700">{coins}</span>
+        <div className="flex items-center justify-center gap-3 mt-2">
+          <div className="inline-flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-full">
+            <span className="text-2xl font-bold">₪</span>
+            <span className="text-xl font-bold text-yellow-700">{coins}</span>
+          </div>
+          <div className="inline-flex items-center gap-2 bg-orange-100 px-4 py-2 rounded-full">
+            <span className="text-xl">⚡</span>
+            <span className="text-xl font-bold text-orange-700">{energy}</span>
+          </div>
         </div>
       </div>
 
@@ -115,6 +122,29 @@ export function CatShopPage() {
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* Games Section */}
+      <div>
+        <h3 className="font-bold text-gray-700 mb-3 text-lg">🎮 Games</h3>
+        <p className="text-xs text-gray-500 mb-3">Earn ⚡ energy by answering questions! 100 per correct quiz answer, 50 per flashcard.</p>
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { id: 'sky-climber', name: 'Sky Climber', emoji: '🚀', cost: 200, path: '/game/sky-climber' },
+            { id: 'cat-runner', name: 'Cat Runner', emoji: '🏃', cost: 150, path: '/game/cat-runner' },
+            { id: 'memory', name: 'Memory Match', emoji: '🧠', cost: 100, path: '/game/memory-match' },
+          ].map(game => (
+            <button
+              key={game.id}
+              onClick={() => navigate(game.path)}
+              className="rounded-xl p-3 border-2 border-orange-200 bg-orange-50 hover:bg-orange-100 text-center transition-all cursor-pointer"
+            >
+              <div className="text-3xl mb-1">{game.emoji}</div>
+              <p className="font-bold text-gray-800 text-xs">{game.name}</p>
+              <p className="text-xs text-orange-600 mt-1">⚡{game.cost}</p>
+            </button>
+          ))}
         </div>
       </div>
 

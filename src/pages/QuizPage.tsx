@@ -21,7 +21,7 @@ export function QuizPage() {
   };
 
   const quiz = useQuiz(sections, selectedSections, timerSettings);
-  const { addCoins } = useProgress();
+  const { addCoins, addEnergy } = useProgress();
   const [started, setStarted] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [confettiTrigger, setConfettiTrigger] = useState(0);
@@ -54,11 +54,12 @@ export function QuizPage() {
     if (quiz.lastAnswerCorrect && quiz.showingFeedback && quiz.currentIndex !== lastAwardedIndex) {
       setConfettiTrigger(prev => prev + 1);
       addCoins(1);
+      addEnergy(100);
       setLastAwardedIndex(quiz.currentIndex);
       setShowCoinAnim(true);
       setTimeout(() => setShowCoinAnim(false), 1500);
     }
-  }, [quiz.showingFeedback, quiz.lastAnswerCorrect, quiz.currentIndex, lastAwardedIndex, addCoins]);
+  }, [quiz.showingFeedback, quiz.lastAnswerCorrect, quiz.currentIndex, lastAwardedIndex, addCoins, addEnergy]);
 
   const handleAnswer = (answer: string) => {
     setSelectedAnswer(answer);
