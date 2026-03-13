@@ -30,6 +30,9 @@ export interface ProgressState {
   bestStreak: number;
   coins: number;
   ownedCats: string[];
+  musicUnlocked: boolean;
+  ownedTracks: string[];
+  activeTrack: string;
 }
 
 export interface Cat {

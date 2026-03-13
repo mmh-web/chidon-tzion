@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useProgress } from '../context/ProgressContext';
 import { cats, rarityColors } from '../data/cats';
 import { Confetti } from '../components/Confetti';
+import { musicTracks, startMusic } from '../utils/music';
 
 export function CatShopPage() {
   const navigate = useNavigate();
-  const { progress, buyCat } = useProgress();
+  const { progress, buyCat, buyTrack, setActiveTrack } = useProgress();
   const coins = progress.coins || 0;
   const owned = progress.ownedCats || [];
+  const ownedTracks = progress.ownedTracks || [];
+  const activeTrack = progress.activeTrack || '';
   const [justBought, setJustBought] = useState<string | null>(null);
   const [confettiKey, setConfettiKey] = useState(0);
 
@@ -21,16 +24,97 @@ export function CatShopPage() {
     }
   };
 
+  const handleBuyTrack = (trackId: string, price: number) => {
+    const success = buyTrack(trackId, price);
+    if (success) {
+      setJustBought(trackId);
+      setConfettiKey(prev => prev + 1);
+      // Auto-start music on purchase
+      const muted = localStorage.getItem('chidon-music-muted');
+      if (muted !== 'true') {
+        startMusic(trackId);
+      }
+      setTimeout(() => setJustBought(null), 2000);
+    }
+  };
+
+  const handleSelectTrack = (trackId: string) => {
+    setActiveTrack(trackId);
+    const muted = localStorage.getItem('chidon-music-muted');
+    if (muted !== 'true') {
+      startMusic(trackId);
+    }
+  };
+
   return (
     <div className="space-y-6" dir="ltr">
       <Confetti trigger={confettiKey > 0} key={confettiKey} intensity="big" />
 
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-1">Cat Collection</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-1">Shop</h2>
         <p className="text-gray-500">Earn shekels by answering questions correctly!</p>
         <div className="inline-flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-full mt-2">
           <span className="text-2xl font-bold">₪</span>
           <span className="text-xl font-bold text-yellow-700">{coins}</span>
+        </div>
+      </div>
+
+      {/* Music Section */}
+      <div>
+        <h3 className="font-bold text-gray-700 mb-3 text-lg">🎵 Music</h3>
+        <div className="grid grid-cols-2 gap-3">
+          {musicTracks.map(track => {
+            const isOwned = ownedTracks.includes(track.id);
+            const isActive = activeTrack === track.id;
+            const canAfford = coins >= track.price;
+            const isJustBought = justBought === track.id;
+
+            return (
+              <div
+                key={track.id}
+                className={`
+                  rounded-xl p-4 border-2 text-center transition-all
+                  ${isActive ? 'bg-green-50 border-green-400 ring-2 ring-green-300' : isOwned ? 'bg-green-50 border-green-300' : 'bg-pink-50 border-pink-200'}
+                  ${isJustBought ? 'animate-pop-in' : ''}
+                `}
+              >
+                <div className={`text-4xl mb-2 ${isOwned ? '' : !canAfford ? 'grayscale opacity-40' : ''}`}>
+                  {track.emoji}
+                </div>
+                <p className="font-bold text-gray-800 text-sm">{track.name}</p>
+                <p className="text-xs text-gray-500 mt-1 leading-tight">{track.description}</p>
+
+                {isOwned ? (
+                  <button
+                    onClick={() => handleSelectTrack(track.id)}
+                    className={`
+                      mt-2 w-full py-2 rounded-lg font-bold text-sm transition-all border-none cursor-pointer
+                      ${isActive
+                        ? 'bg-green-500 text-white'
+                        : 'bg-green-100 hover:bg-green-200 text-green-700'
+                      }
+                    `}
+                  >
+                    {isActive ? '♫ Playing' : '▶ Play'}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleBuyTrack(track.id, track.price)}
+                    disabled={!canAfford}
+                    className={`
+                      mt-2 w-full py-2 rounded-lg font-bold text-sm transition-all border-none cursor-pointer
+                      ${canAfford
+                        ? 'bg-yellow-400 hover:bg-yellow-500 text-yellow-900 active:scale-95'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      }
+                    `}
+                  >
+                    ₪ {track.price}
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -57,55 +141,58 @@ export function CatShopPage() {
         </div>
       )}
 
-      {/* Shop grid */}
-      <div className="grid grid-cols-2 gap-3">
-        {cats.map(cat => {
-          const isOwned = owned.includes(cat.id);
-          const canAfford = coins >= cat.price;
-          const colors = rarityColors[cat.rarity];
-          const isJustBought = justBought === cat.id;
+      {/* Cat Shop grid */}
+      <div>
+        <h3 className="font-bold text-gray-700 mb-3 text-lg">🐱 Cats</h3>
+        <div className="grid grid-cols-2 gap-3">
+          {cats.map(cat => {
+            const isOwned = owned.includes(cat.id);
+            const canAfford = coins >= cat.price;
+            const colors = rarityColors[cat.rarity];
+            const isJustBought = justBought === cat.id;
 
-          return (
-            <div
-              key={cat.id}
-              className={`
-                rounded-xl p-4 border-2 text-center transition-all
-                ${isOwned ? 'bg-green-50 border-green-300' : `${colors.bg} ${colors.border}`}
-                ${isJustBought ? 'animate-pop-in' : ''}
-              `}
-            >
-              <div className={`mb-2 ${isOwned ? '' : !canAfford ? 'grayscale opacity-40' : ''}`}>
-                {cat.image ? (
-                  <img src={cat.image} alt={cat.name} className="w-20 h-20 rounded-full object-cover mx-auto" />
+            return (
+              <div
+                key={cat.id}
+                className={`
+                  rounded-xl p-4 border-2 text-center transition-all
+                  ${isOwned ? 'bg-green-50 border-green-300' : `${colors.bg} ${colors.border}`}
+                  ${isJustBought ? 'animate-pop-in' : ''}
+                `}
+              >
+                <div className={`mb-2 ${isOwned ? '' : !canAfford ? 'grayscale opacity-40' : ''}`}>
+                  {cat.image ? (
+                    <img src={cat.image} alt={cat.name} className="w-20 h-20 rounded-full object-cover mx-auto" />
+                  ) : (
+                    <div className="text-5xl">{cat.emoji}</div>
+                  )}
+                </div>
+                <p className="font-bold text-gray-800 text-sm">{cat.name}</p>
+                <span className={`inline-block text-xs px-2 py-0.5 rounded-full mt-1 ${colors.badge}`}>
+                  {cat.rarity}
+                </span>
+
+                {isOwned ? (
+                  <div className="mt-2 text-green-600 font-bold text-sm">Owned!</div>
                 ) : (
-                  <div className="text-5xl">{cat.emoji}</div>
+                  <button
+                    onClick={() => handleBuy(cat.id, cat.price)}
+                    disabled={!canAfford}
+                    className={`
+                      mt-2 w-full py-2 rounded-lg font-bold text-sm transition-all border-none cursor-pointer
+                      ${canAfford
+                        ? 'bg-yellow-400 hover:bg-yellow-500 text-yellow-900 active:scale-95'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      }
+                    `}
+                  >
+                    ₪ {cat.price}
+                  </button>
                 )}
               </div>
-              <p className="font-bold text-gray-800 text-sm">{cat.name}</p>
-              <span className={`inline-block text-xs px-2 py-0.5 rounded-full mt-1 ${colors.badge}`}>
-                {cat.rarity}
-              </span>
-
-              {isOwned ? (
-                <div className="mt-2 text-green-600 font-bold text-sm">Owned!</div>
-              ) : (
-                <button
-                  onClick={() => handleBuy(cat.id, cat.price)}
-                  disabled={!canAfford}
-                  className={`
-                    mt-2 w-full py-2 rounded-lg font-bold text-sm transition-all border-none cursor-pointer
-                    ${canAfford
-                      ? 'bg-yellow-400 hover:bg-yellow-500 text-yellow-900 active:scale-95'
-                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    }
-                  `}
-                >
-                  ₪ {cat.price}
-                </button>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       <button

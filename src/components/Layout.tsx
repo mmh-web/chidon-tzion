@@ -1,6 +1,7 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useProgress } from '../context/ProgressContext';
+import { startMusic, stopMusic } from '../utils/music';
 
 export function Layout({ children }: { children: ReactNode }) {
   const location = useLocation();
@@ -8,6 +9,33 @@ export function Layout({ children }: { children: ReactNode }) {
   const { progress } = useProgress();
   const coins = progress.coins || 0;
   const ownedCats = progress.ownedCats || [];
+  const musicUnlocked = progress.musicUnlocked || false;
+  const activeTrack = progress.activeTrack || '';
+
+  const [muted, setMuted] = useState(() => {
+    return localStorage.getItem('chidon-music-muted') === 'true';
+  });
+
+  // Auto-start music when unlocked and not muted
+  useEffect(() => {
+    if (musicUnlocked && activeTrack && !muted) {
+      startMusic(activeTrack);
+    }
+    return () => {
+      stopMusic();
+    };
+  }, [musicUnlocked, activeTrack, muted]);
+
+  const toggleMute = () => {
+    const newMuted = !muted;
+    setMuted(newMuted);
+    localStorage.setItem('chidon-music-muted', String(newMuted));
+    if (newMuted) {
+      stopMusic();
+    } else if (musicUnlocked && activeTrack) {
+      startMusic(activeTrack);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -22,6 +50,15 @@ export function Layout({ children }: { children: ReactNode }) {
             </div>
           </Link>
           <div className="flex items-center gap-2">
+            {musicUnlocked && (
+              <button
+                onClick={toggleMute}
+                className="bg-white/20 hover:bg-white/30 text-white w-9 h-9 rounded-lg flex items-center justify-center transition-colors border-none cursor-pointer text-lg"
+                title={muted ? 'Unmute music' : 'Mute music'}
+              >
+                {muted ? '🔇' : '🔊'}
+              </button>
+            )}
             <Link
               to="/cats"
               className="bg-yellow-400/90 hover:bg-yellow-400 text-yellow-900 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors no-underline flex items-center gap-1"

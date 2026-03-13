@@ -8,6 +8,9 @@ const defaultProgress: ProgressState = {
   bestStreak: 0,
   coins: 0,
   ownedCats: [],
+  musicUnlocked: false,
+  ownedTracks: [],
+  activeTrack: '',
 };
 
 interface ProgressContextType {
@@ -19,6 +22,8 @@ interface ProgressContextType {
   resetProgress: () => void;
   addCoins: (amount: number) => void;
   buyCat: (catId: string, price: number) => boolean;
+  buyTrack: (trackId: string, price: number) => boolean;
+  setActiveTrack: (trackId: string) => void;
 }
 
 const ProgressContext = createContext<ProgressContextType | null>(null);
@@ -111,12 +116,36 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     return success;
   };
 
+  const buyTrack = (trackId: string, price: number): boolean => {
+    let success = false;
+    setProgress(prev => {
+      const coins = prev.coins || 0;
+      const owned = prev.ownedTracks || [];
+      if (coins >= price && !owned.includes(trackId)) {
+        success = true;
+        return {
+          ...prev,
+          coins: coins - price,
+          musicUnlocked: true,
+          ownedTracks: [...owned, trackId],
+          activeTrack: prev.activeTrack || trackId,
+        };
+      }
+      return prev;
+    });
+    return success;
+  };
+
+  const setActiveTrack = (trackId: string) => {
+    setProgress(prev => ({ ...prev, activeTrack: trackId }));
+  };
+
   const resetProgress = () => {
     setProgress(defaultProgress);
   };
 
   return (
-    <ProgressContext.Provider value={{ progress, recordAnswer, incrementQuizCount, updateBestStreak, getQuestionProgress, resetProgress, addCoins, buyCat }}>
+    <ProgressContext.Provider value={{ progress, recordAnswer, incrementQuizCount, updateBestStreak, getQuestionProgress, resetProgress, addCoins, buyCat, buyTrack, setActiveTrack }}>
       {children}
     </ProgressContext.Provider>
   );
