@@ -1,5 +1,6 @@
-// Multi-track chiptune music using Web Audio API
+// Multi-track chiptune music using Web Audio API + audio file support
 let audioContext: AudioContext | null = null;
+let audioElement: HTMLAudioElement | null = null;
 let isPlaying = false;
 let timeoutIds: number[] = [];
 let currentTrackId = '';
@@ -51,22 +52,6 @@ const danceMelody: Note[] = [
   [329.63, 0.5], [293.66, 0.5], [329.63, 2],
 ];
 
-// Track 5: Ani Maamin by TAI (Tai Gerszberg) — Bm, 120 BPM feel
-// B3=246.94 C#4=277.18 D4=293.66 E4=329.63 F#4=369.99 G4=392.00 A4=440.00 B4=493.88
-const aniMaaminMelody: Note[] = [
-  // Verse: "Ani maamin..." — slow, plaintive opening in Bm
-  [246.94, 2], [293.66, 1], [329.63, 1], [369.99, 2], [329.63, 2],
-  [293.66, 1], [329.63, 1], [369.99, 1], [329.63, 1], [293.66, 2], [246.94, 2],
-  // Rising: "be'emuna shelema..."
-  [293.66, 1], [369.99, 1], [392.00, 2], [440.00, 1], [392.00, 1],
-  [369.99, 2], [329.63, 1], [293.66, 1], [329.63, 2],
-  // Chorus climb: emotional peak
-  [369.99, 1], [440.00, 1], [493.88, 2], [440.00, 1], [392.00, 1],
-  [440.00, 2], [493.88, 1], [440.00, 1], [392.00, 1], [369.99, 1], [329.63, 2],
-  // Resolve back down
-  [369.99, 1], [329.63, 1], [293.66, 2], [329.63, 1], [293.66, 1], [246.94, 3],
-];
-
 export interface MusicTrack {
   id: string;
   name: string;
@@ -76,14 +61,17 @@ export interface MusicTrack {
   waveType: OscillatorType;
   tempo: number;
   melody: Note[];
+  audioFile?: string; // path to real audio file in public/
 }
+
+const BASE = import.meta.env.BASE_URL;
 
 export const musicTracks: MusicTrack[] = [
   { id: 'cheerful', name: 'Cheerful Tune', emoji: '🎵', description: 'A happy melody to keep you motivated!', price: 25, waveType: 'square', tempo: 1, melody: cheerfulMelody },
   { id: 'chill', name: 'Chill Vibes', emoji: '🎧', description: 'Relaxed lo-fi beats for focused studying', price: 35, waveType: 'sine', tempo: 1.4, melody: chillMelody },
   { id: 'epic', name: 'Epic Quest', emoji: '⚔️', description: 'Adventure music for brave learners!', price: 50, waveType: 'sawtooth', tempo: 1.1, melody: epicMelody },
   { id: 'dance', name: 'Dance Party', emoji: '🕺', description: 'Get your groove on while you study!', price: 40, waveType: 'square', tempo: 0.85, melody: danceMelody },
-  { id: 'ani-maamin', name: 'Ani Maamin', emoji: '🕊️', description: 'TAI — beautiful & emotional', price: 30, waveType: 'sine', tempo: 2.2, melody: aniMaaminMelody },
+  { id: 'ani-maamin', name: 'Ani Maamin', emoji: '🕊️', description: 'TAI — the real song!', price: 30, waveType: 'sine', tempo: 2.2, melody: [], audioFile: `${BASE}music/ani-maamin.mp3` },
 ];
 
 function playNote(ctx: AudioContext, freq: number, startTime: number, duration: number, volume: number, waveType: OscillatorType) {
@@ -138,6 +126,19 @@ export function startMusic(trackId?: string) {
 
   if (isPlaying) return;
 
+  currentTrackId = id;
+  isPlaying = true;
+
+  // Use real audio file if available
+  if (track.audioFile) {
+    audioElement = new Audio(track.audioFile);
+    audioElement.loop = true;
+    audioElement.volume = 0.5;
+    audioElement.play().catch(() => {});
+    return;
+  }
+
+  // Otherwise use Web Audio API synth
   if (!audioContext) {
     audioContext = new AudioContext();
   }
@@ -146,8 +147,6 @@ export function startMusic(trackId?: string) {
     audioContext.resume();
   }
 
-  currentTrackId = id;
-  isPlaying = true;
   playMelodyLoop(track);
 }
 
@@ -155,6 +154,12 @@ export function stopMusic() {
   isPlaying = false;
   timeoutIds.forEach(id => clearTimeout(id));
   timeoutIds = [];
+
+  if (audioElement) {
+    audioElement.pause();
+    audioElement.src = '';
+    audioElement = null;
+  }
 
   if (audioContext) {
     audioContext.close();
