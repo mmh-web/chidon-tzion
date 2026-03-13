@@ -1,0 +1,99 @@
+import { createContext, useContext, ReactNode } from 'react';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { ProgressState, QuestionProgress } from '../types';
+
+const defaultProgress: ProgressState = {
+  questionProgress: {},
+  totalQuizzesTaken: 0,
+  bestStreak: 0,
+};
+
+interface ProgressContextType {
+  progress: ProgressState;
+  recordAnswer: (questionId: string, correct: boolean) => void;
+  incrementQuizCount: () => void;
+  updateBestStreak: (streak: number) => void;
+  getQuestionProgress: (questionId: string) => QuestionProgress;
+  resetProgress: () => void;
+}
+
+const ProgressContext = createContext<ProgressContextType | null>(null);
+
+export function ProgressProvider({ children }: { children: ReactNode }) {
+  const [progress, setProgress] = useLocalStorage<ProgressState>('chidon-progress', defaultProgress);
+
+  const getQuestionProgress = (questionId: string): QuestionProgress => {
+    return progress.questionProgress[questionId] || {
+      questionId,
+      timesCorrect: 0,
+      timesWrong: 0,
+      consecutiveCorrect: 0,
+      mastered: false,
+      lastSeen: 0,
+    };
+  };
+
+  const recordAnswer = (questionId: string, correct: boolean) => {
+    setProgress(prev => {
+      const existing = prev.questionProgress[questionId] || {
+        questionId,
+        timesCorrect: 0,
+        timesWrong: 0,
+        consecutiveCorrect: 0,
+        mastered: false,
+        lastSeen: 0,
+      };
+
+      const updated: QuestionProgress = correct
+        ? {
+            ...existing,
+            timesCorrect: existing.timesCorrect + 1,
+            consecutiveCorrect: existing.consecutiveCorrect + 1,
+            mastered: existing.consecutiveCorrect + 1 >= 3,
+            lastSeen: Date.now(),
+          }
+        : {
+            ...existing,
+            timesWrong: existing.timesWrong + 1,
+            consecutiveCorrect: 0,
+            mastered: false,
+            lastSeen: Date.now(),
+          };
+
+      return {
+        ...prev,
+        questionProgress: {
+          ...prev.questionProgress,
+          [questionId]: updated,
+        },
+      };
+    });
+  };
+
+  const incrementQuizCount = () => {
+    setProgress(prev => ({ ...prev, totalQuizzesTaken: prev.totalQuizzesTaken + 1 }));
+  };
+
+  const updateBestStreak = (streak: number) => {
+    setProgress(prev => ({
+      ...prev,
+      bestStreak: Math.max(prev.bestStreak, streak),
+    }));
+  };
+
+  const resetProgress = () => {
+    setProgress(defaultProgress);
+  };
+
+  return (
+    <ProgressContext.Provider value={{ progress, recordAnswer, incrementQuizCount, updateBestStreak, getQuestionProgress, resetProgress }}>
+      {children}
+    </ProgressContext.Provider>
+  );
+}
+
+export function useProgress() {
+  const context = useContext(ProgressContext);
+  if (!context) throw new Error('useProgress must be used within ProgressProvider');
+  return context;
+}
