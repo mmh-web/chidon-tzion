@@ -1,4 +1,4 @@
-import { createContext, useContext, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useCallback, useEffect, ReactNode } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { ProgressState, QuestionProgress } from '../types';
 
@@ -25,6 +25,14 @@ const ProgressContext = createContext<ProgressContextType | null>(null);
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
   const [progress, setProgress] = useLocalStorage<ProgressState>('chidon-progress', defaultProgress);
+
+  // One-time migration: fix bugged coin values from earlier useEffect loop
+  useEffect(() => {
+    if ((progress.coins || 0) > 500) {
+      setProgress(prev => ({ ...prev, coins: 0, ownedCats: [] }));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getQuestionProgress = (questionId: string): QuestionProgress => {
     return progress.questionProgress[questionId] || {

@@ -44,7 +44,11 @@ export function CatShopPage() {
               if (!cat) return null;
               return (
                 <div key={catId} className="text-center animate-pop-in">
-                  <div className="text-4xl">{cat.emoji}</div>
+                  {cat.image ? (
+                    <img src={cat.image} alt={cat.name} className="w-14 h-14 rounded-full object-cover mx-auto" />
+                  ) : (
+                    <div className="text-4xl">{cat.emoji}</div>
+                  )}
                   <p className="text-xs text-gray-500 mt-1">{cat.name}</p>
                 </div>
               );
@@ -70,8 +74,12 @@ export function CatShopPage() {
                 ${isJustBought ? 'animate-pop-in' : ''}
               `}
             >
-              <div className={`text-5xl mb-2 ${isOwned ? '' : !canAfford ? 'grayscale opacity-40' : ''}`}>
-                {cat.emoji}
+              <div className={`mb-2 ${isOwned ? '' : !canAfford ? 'grayscale opacity-40' : ''}`}>
+                {cat.image ? (
+                  <img src={cat.image} alt={cat.name} className="w-20 h-20 rounded-full object-cover mx-auto" />
+                ) : (
+                  <div className="text-5xl">{cat.emoji}</div>
+                )}
               </div>
               <p className="font-bold text-gray-800 text-sm">{cat.name}</p>
               <span className={`inline-block text-xs px-2 py-0.5 rounded-full mt-1 ${colors.badge}`}>

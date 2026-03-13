@@ -36,6 +36,7 @@ export interface Cat {
   id: string;
   name: string;
   emoji: string;
+  image?: string;
   price: number;
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
 }

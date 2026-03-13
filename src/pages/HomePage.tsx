@@ -126,10 +126,10 @@ export function HomePage() {
       {/* Reset */}
       <div className="text-center pt-4">
         <button
-          onClick={() => { if (confirm('Are you sure? All progress will be deleted.')) resetProgress(); }}
-          className="text-xs text-gray-400 hover:text-red-400 bg-transparent border-none cursor-pointer"
+          onClick={() => { if (confirm('Are you sure? All progress, coins, and cats will be deleted.')) resetProgress(); }}
+          className="text-sm text-red-400 hover:text-red-600 bg-transparent border-none cursor-pointer underline"
         >
-          Reset Progress
+          Reset All Progress
         </button>
       </div>
     </div>
