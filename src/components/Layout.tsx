@@ -1,12 +1,14 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useProgress } from '../context/ProgressContext';
+import { useProfile } from '../context/ProfileContext';
 import { startMusic, stopMusic } from '../utils/music';
 
 export function Layout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const isHome = location.pathname === '/';
   const { progress } = useProgress();
+  const { activeProfile, logout } = useProfile();
   const coins = progress.coins || 0;
   const ownedCats = progress.ownedCats || [];
   const musicUnlocked = progress.musicUnlocked || false;
@@ -65,6 +67,13 @@ export function Layout({ children }: { children: ReactNode }) {
             >
               ₪{coins} {ownedCats.length > 0 && <span>| 🐱 {ownedCats.length}</span>}
             </Link>
+            <button
+              onClick={logout}
+              className="bg-white/20 hover:bg-white/30 text-white w-9 h-9 rounded-lg flex items-center justify-center transition-colors border-none cursor-pointer text-sm font-bold"
+              title={`Logged in as ${activeProfile} — click to switch`}
+            >
+              {activeProfile?.charAt(0).toUpperCase()}
+            </button>
             {!isHome && (
               <Link
                 to="/"

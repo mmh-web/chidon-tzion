@@ -83,8 +83,8 @@ export function ReviewPage() {
       // Every correct: earn energy
       addEnergy(25);
 
-      // Every 3 correct: earn ₪1 + UFO joke
-      if (newKnewCount > 0 && newKnewCount % 3 === 0) {
+      // Every 2 correct: earn ₪1 + UFO joke
+      if (newKnewCount > 0 && newKnewCount % 2 === 0) {
         addCoins(1);
         triggerUfo();
       }

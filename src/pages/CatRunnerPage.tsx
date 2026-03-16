@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProgress } from '../context/ProgressContext';
+import { useProfile } from '../context/ProfileContext';
 import { cats } from '../data/cats';
 
 const CANVAS_W = 360;
@@ -21,9 +22,11 @@ interface Obstacle {
 export function CatRunnerPage() {
   const navigate = useNavigate();
   const { progress, spendEnergy } = useProgress();
+  const { getStorageKey } = useProfile();
   const energy = progress.energy || 0;
   const ownedCats = progress.ownedCats || [];
   const canPlay = energy >= ENERGY_COST;
+  const highScoreKey = getStorageKey('chidon-catrunner-high');
 
   // Pick avatar: first owned cat, or default emoji
   const avatarCat = cats.find(c => ownedCats.includes(c.id));
@@ -33,7 +36,7 @@ export function CatRunnerPage() {
   const [playing, setPlaying] = useState(false);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(() =>
-    Number(localStorage.getItem('chidon-catrunner-high') || '0')
+    Number(localStorage.getItem(highScoreKey) || '0')
   );
   const [gameOver, setGameOver] = useState(false);
 
@@ -158,9 +161,9 @@ export function CatRunnerPage() {
           setGameOver(true);
           const finalScore = g.score;
           setScore(finalScore);
-          const prevHigh = Number(localStorage.getItem('chidon-catrunner-high') || '0');
+          const prevHigh = Number(localStorage.getItem(highScoreKey) || '0');
           if (finalScore > prevHigh) {
-            localStorage.setItem('chidon-catrunner-high', String(finalScore));
+            localStorage.setItem(highScoreKey, String(finalScore));
             setHighScore(finalScore);
           }
           return;

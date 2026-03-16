@@ -1,5 +1,6 @@
 import { createContext, useContext, useCallback, useEffect, ReactNode } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useProfile } from './ProfileContext';
 import { ProgressState, QuestionProgress } from '../types';
 
 const defaultProgress: ProgressState = {
@@ -32,7 +33,8 @@ interface ProgressContextType {
 const ProgressContext = createContext<ProgressContextType | null>(null);
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
-  const [progress, setProgress] = useLocalStorage<ProgressState>('chidon-progress', defaultProgress);
+  const { getStorageKey } = useProfile();
+  const [progress, setProgress] = useLocalStorage<ProgressState>(getStorageKey('chidon-progress'), defaultProgress);
 
   // One-time migration: fix bugged coin values from earlier useEffect loop
   useEffect(() => {

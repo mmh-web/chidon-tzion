@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProgress } from '../context/ProgressContext';
+import { useProfile } from '../context/ProfileContext';
 
 const CANVAS_W = 360;
 const CANVAS_H = 600;
@@ -41,14 +42,16 @@ function generatePlatforms(count: number, startY: number): Platform[] {
 export function SkyClimberPage() {
   const navigate = useNavigate();
   const { progress, spendEnergy } = useProgress();
+  const { getStorageKey } = useProfile();
   const energy = progress.energy || 0;
   const canPlay = energy >= ENERGY_COST;
+  const highScoreKey = getStorageKey('chidon-skyclimber-high');
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [playing, setPlaying] = useState(false);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(() => {
-    return Number(localStorage.getItem('chidon-skyclimber-high') || '0');
+    return Number(localStorage.getItem(highScoreKey) || '0');
   });
   const [gameOver, setGameOver] = useState(false);
 
@@ -190,9 +193,9 @@ export function SkyClimberPage() {
         setGameOver(true);
         const finalScore = gs.score;
         setScore(finalScore);
-        const prevHigh = Number(localStorage.getItem('chidon-skyclimber-high') || '0');
+        const prevHigh = Number(localStorage.getItem(highScoreKey) || '0');
         if (finalScore > prevHigh) {
-          localStorage.setItem('chidon-skyclimber-high', String(finalScore));
+          localStorage.setItem(highScoreKey, String(finalScore));
           setHighScore(finalScore);
         }
         return;

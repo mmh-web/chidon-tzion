@@ -3,6 +3,7 @@ import { SectionFilter } from '../components/SectionFilter';
 import { ProgressBar } from '../components/ProgressBar';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useProgress } from '../context/ProgressContext';
+import { useProfile } from '../context/ProfileContext';
 import questionsData from '../data/questions.json';
 import { Section, TimerSettings } from '../types';
 
@@ -11,10 +12,11 @@ const allSectionIds = sections.map(s => s.id);
 
 export function HomePage() {
   const navigate = useNavigate();
-  const [selectedSections, setSelectedSections] = useLocalStorage<string[]>('chidon-sections', allSectionIds);
-  const [timerEnabled, setTimerEnabled] = useLocalStorage<boolean>('chidon-timer', false);
-  const [timerSeconds, setTimerSeconds] = useLocalStorage<number>('chidon-timer-seconds', 30);
-  const [numQuestions, setNumQuestions] = useLocalStorage<number>('chidon-num-questions', 10);
+  const { getStorageKey, activeProfile } = useProfile();
+  const [selectedSections, setSelectedSections] = useLocalStorage<string[]>(getStorageKey('chidon-sections'), allSectionIds);
+  const [timerEnabled, setTimerEnabled] = useLocalStorage<boolean>(getStorageKey('chidon-timer'), false);
+  const [timerSeconds, setTimerSeconds] = useLocalStorage<number>(getStorageKey('chidon-timer-seconds'), 30);
+  const [numQuestions, setNumQuestions] = useLocalStorage<number>(getStorageKey('chidon-num-questions'), 10);
   const { resetProgress } = useProgress();
 
   const totalSelected = sections
@@ -30,7 +32,7 @@ export function HomePage() {
     <div className="space-y-6" dir="ltr">
       {/* Welcome */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-1">Welcome!</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-1">Welcome{activeProfile ? `, ${activeProfile}` : ''}!</h2>
         <p className="text-gray-500">Let's get ready for Chidon Tzion!</p>
       </div>
 

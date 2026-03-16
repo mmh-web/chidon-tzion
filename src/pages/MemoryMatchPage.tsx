@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProgress } from '../context/ProgressContext';
+import { useProfile } from '../context/ProfileContext';
 
 const ENERGY_COST = 100;
 const EMOJIS = ['🐱', '🦁', '🐯', '🐈', '🐆', '😺', '🙀', '😻'];
@@ -28,6 +29,8 @@ function createBoard(): Card[] {
 export function MemoryMatchPage() {
   const navigate = useNavigate();
   const { progress, spendEnergy } = useProgress();
+  const { getStorageKey } = useProfile();
+  const bestScoreKey = getStorageKey('chidon-memory-best');
   const energy = progress.energy || 0;
   const canPlay = energy >= ENERGY_COST;
 
@@ -38,7 +41,7 @@ export function MemoryMatchPage() {
   const [matches, setMatches] = useState(0);
   const [locked, setLocked] = useState(false);
   const [bestMoves, setBestMoves] = useState(() =>
-    Number(localStorage.getItem('chidon-memory-best') || '0')
+    Number(localStorage.getItem(bestScoreKey) || '0')
   );
 
   const startGame = useCallback(() => {
@@ -84,9 +87,9 @@ export function MemoryMatchPage() {
         // Check win
         if (newMatches === EMOJIS.length) {
           const totalMoves = moves + 1;
-          const prev = Number(localStorage.getItem('chidon-memory-best') || '0');
+          const prev = Number(localStorage.getItem(bestScoreKey) || '0');
           if (prev === 0 || totalMoves < prev) {
-            localStorage.setItem('chidon-memory-best', String(totalMoves));
+            localStorage.setItem(bestScoreKey, String(totalMoves));
             setBestMoves(totalMoves);
           }
         }

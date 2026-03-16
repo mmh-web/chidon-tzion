@@ -1,4 +1,5 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
+import { ProfileProvider, useProfile } from './context/ProfileContext';
 import { ProgressProvider } from './context/ProgressContext';
 import { Layout } from './components/Layout';
 import { HomePage } from './pages/HomePage';
@@ -9,10 +10,17 @@ import { CatShopPage } from './pages/CatShopPage';
 import { SkyClimberPage } from './pages/SkyClimberPage';
 import { CatRunnerPage } from './pages/CatRunnerPage';
 import { MemoryMatchPage } from './pages/MemoryMatchPage';
+import { ProfileSelectPage } from './pages/ProfileSelectPage';
 
-function App() {
+function AppContent() {
+  const { activeProfile } = useProfile();
+
+  if (!activeProfile) {
+    return <ProfileSelectPage />;
+  }
+
   return (
-    <ProgressProvider>
+    <ProgressProvider key={activeProfile}>
       <HashRouter>
         <Layout>
           <Routes>
@@ -28,6 +36,14 @@ function App() {
         </Layout>
       </HashRouter>
     </ProgressProvider>
+  );
+}
+
+function App() {
+  return (
+    <ProfileProvider>
+      <AppContent />
+    </ProfileProvider>
   );
 }
 
