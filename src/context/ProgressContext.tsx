@@ -44,6 +44,16 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // One-time coin grants
+  useEffect(() => {
+    const grantKey = getStorageKey('chidon-grant-60');
+    if (!localStorage.getItem(grantKey)) {
+      setProgress(prev => ({ ...prev, coins: (prev.coins || 0) + 60 }));
+      localStorage.setItem(grantKey, 'applied');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const getQuestionProgress = (questionId: string): QuestionProgress => {
     return progress.questionProgress[questionId] || {
       questionId,
