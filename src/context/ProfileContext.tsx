@@ -26,22 +26,31 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     return localStorage.getItem('chidon-active-profile') || null;
   });
 
+  const migrateOldData = (profileName: string) => {
+    // Migrate old pre-profile data if this profile has no progress yet
+    const profileKey = `chidon-progress-${profileName}`;
+    const existing = localStorage.getItem(profileKey);
+    if (!existing || existing === '{}') {
+      const oldData = localStorage.getItem('chidon-progress');
+      if (oldData) {
+        localStorage.setItem(profileKey, oldData);
+      }
+    }
+  };
+
   const createProfile = (name: string) => {
     const trimmed = name.trim();
     if (!trimmed) return;
     // If profile already exists, just switch to it
     if (profiles.includes(trimmed)) {
+      migrateOldData(trimmed);
       switchProfile(trimmed);
       return;
     }
     const updated = [...profiles, trimmed];
     setProfiles(updated);
     localStorage.setItem('chidon-profiles', JSON.stringify(updated));
-    // Migrate old data (pre-profile system) to new profile key
-    const oldData = localStorage.getItem('chidon-progress');
-    if (oldData && updated.length === 1) {
-      localStorage.setItem(`chidon-progress-${trimmed}`, oldData);
-    }
+    migrateOldData(trimmed);
     setActiveProfile(trimmed);
     localStorage.setItem('chidon-active-profile', trimmed);
   };
