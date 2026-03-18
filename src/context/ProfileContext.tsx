@@ -27,14 +27,30 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   });
 
   const migrateOldData = (profileName: string) => {
-    // Migrate old pre-profile data if this profile has no progress yet
+    // Migrate old pre-profile data if this profile has no real progress
     const profileKey = `chidon-progress-${profileName}`;
-    const existing = localStorage.getItem(profileKey);
-    if (!existing || existing === '{}') {
-      const oldData = localStorage.getItem('chidon-progress');
-      if (oldData) {
-        localStorage.setItem(profileKey, oldData);
+    const oldData = localStorage.getItem('chidon-progress');
+    if (!oldData) return;
+    try {
+      const oldParsed = JSON.parse(oldData);
+      const oldHasProgress = oldParsed.totalQuizzesTaken > 0 ||
+        Object.keys(oldParsed.questionProgress || {}).length > 0 ||
+        (oldParsed.coins || 0) > 0 ||
+        (oldParsed.ownedCats || []).length > 0;
+      if (!oldHasProgress) return;
+
+      const existing = localStorage.getItem(profileKey);
+      if (existing) {
+        const parsed = JSON.parse(existing);
+        const hasProgress = parsed.totalQuizzesTaken > 0 ||
+          Object.keys(parsed.questionProgress || {}).length > 0 ||
+          (parsed.coins || 0) > 0 ||
+          (parsed.ownedCats || []).length > 0;
+        if (hasProgress) return; // Profile already has real data, don't overwrite
       }
+      localStorage.setItem(profileKey, oldData);
+    } catch {
+      // ignore parse errors
     }
   };
 
