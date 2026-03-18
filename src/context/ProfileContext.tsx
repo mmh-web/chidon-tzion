@@ -28,10 +28,20 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
   const createProfile = (name: string) => {
     const trimmed = name.trim();
-    if (!trimmed || profiles.includes(trimmed)) return;
+    if (!trimmed) return;
+    // If profile already exists, just switch to it
+    if (profiles.includes(trimmed)) {
+      switchProfile(trimmed);
+      return;
+    }
     const updated = [...profiles, trimmed];
     setProfiles(updated);
     localStorage.setItem('chidon-profiles', JSON.stringify(updated));
+    // Migrate old data (pre-profile system) to new profile key
+    const oldData = localStorage.getItem('chidon-progress');
+    if (oldData && updated.length === 1) {
+      localStorage.setItem(`chidon-progress-${trimmed}`, oldData);
+    }
     setActiveProfile(trimmed);
     localStorage.setItem('chidon-active-profile', trimmed);
   };
