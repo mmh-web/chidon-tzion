@@ -46,7 +46,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   // One-time coin grants
   useEffect(() => {
-    const grantKey = getStorageKey('chidon-grant-60');
+    const grantKey = getStorageKey('chidon-grant-60-v2');
     if (!localStorage.getItem(grantKey)) {
       setProgress(prev => ({ ...prev, coins: (prev.coins || 0) + 60 }));
       localStorage.setItem(grantKey, 'applied');
